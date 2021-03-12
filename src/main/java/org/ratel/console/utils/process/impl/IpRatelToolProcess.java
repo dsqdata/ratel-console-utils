@@ -13,8 +13,14 @@ import java.util.List;
 
 @Slf4j
 public class IpRatelToolProcess extends RatelToolProcess {
+
     @Override
-    public void process() throws Exception {
+    public void beforeProcess() throws Exception {
+    }
+
+
+    @Override
+    public void processOperation() throws Exception {
         log.info("\n----------------------------------------------------------\n\t" +
                         "本机 IP 列表! \n\t" +
                         "{}\n" +

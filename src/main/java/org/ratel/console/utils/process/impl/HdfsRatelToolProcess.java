@@ -2,6 +2,7 @@ package org.ratel.console.utils.process.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.ratel.console.utils.process.RatelToolProcess;
@@ -10,25 +11,46 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 
 @Slf4j
 public class HdfsRatelToolProcess extends RatelToolProcess {
     FileSystem fileSystem = null;
 
-    public void processOp() throws Exception {
-        log.info("\n----------------------------------------------------------\n\t" +
-                        "FDFS 链接成功! \n\t" +
-                        "1、{}\n\t" +
-                        "2、{}\n\t" +
-                        "3、{}\n\t" +
-                        "4、{}\n" +
-                        "----------------------------------------------------------",
-                "上传文件",
-                "下载文件",
-                "删除文件",
-                "创建文件夹"
-        );
+    @Override
+    public void beforeProcess() throws Exception {
+    }
 
+    @Override
+    public void processOperation() throws Exception {
+        String hdfsUri = getScannerInput("请输入Hdfs 链接 (例：172.16.36.222:9000):\n");
+        hdfsUri = !StringUtils.isEmpty(hdfsUri) ? hdfsUri : "172.16.36.222:9000";
+        String hdfsUser = getScannerInput("请输入Hdfs 用户 (例：root):\n");
+        hdfsUser = !StringUtils.isEmpty(hdfsUser) ? hdfsUser : "root";
+        fileSystem = getFileSystem(hdfsUri, hdfsUser);
+        processOperationSub();
+    }
+
+    public void processOperationSub() throws Exception {
+        beforeProcessSub();
+        processSub();
+    }
+
+    public void beforeProcessSub() throws Exception {
+        String[] args = new String[]{"返回上一层", "上传文件", "下载文件", "删除文件", "创建文件夹", "文件列表"};
+        log.info("\n----------------------------------------------------------\n\t" +
+                "FDFS 链接成功! \n\t" +
+                "0、{}\n\t" +
+                "1、{}\n\t" +
+                "2、{}\n\t" +
+                "3、{}\n\t" +
+                "4、{}\n\t" +
+                "5、{}\n" +
+                "----------------------------------------------------------", args
+        );
+    }
+
+    public void processSub() throws Exception {
         String toolNumber = getScannerInput("请选择功能:\n");
         switch (toolNumber) {
             case "1":
@@ -70,23 +92,28 @@ public class HdfsRatelToolProcess extends RatelToolProcess {
                 }
                 fileSystem.mkdirs(new Path(creatFilePath));
                 break;
+            case "5":
+                String findFilePath = getScannerInput("请输入查询文件完整路径 (例：/test/11.pdf):\n");
+                if (StringUtils.isEmpty(findFilePath)) {
+                    System.out.println("查询文件完整路径为空！");
+                    break;
+                }
+                System.out.println("正在查询文件... ...");
+                FileStatus[] statuses = fileSystem.listStatus(new Path(findFilePath));
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                for (FileStatus file : statuses) {
+                    System.out.println(format.format(file.getModificationTime()) + "  " + file.getPermission() + "  " + file.getPath() + "    " + file.getLen() + "k  " + (file.isDirectory() ? "文件夹" : "文件"));
+                }
+                break;
             default: //可选
                 System.out.println("请正确输入工具序号！");
                 break;
         }
-        this.processOp();
+        if (!"0".equals(toolNumber)) {
+            processOperationSub();
+        }
     }
 
-
-    @Override
-    public void process() throws Exception {
-        String hdfsUri = getScannerInput("请输入Hdfs 链接 (例：172.16.36.222:9000):\n");
-        hdfsUri = !StringUtils.isEmpty(hdfsUri) ? hdfsUri : "172.16.36.222:9000";
-        String hdfsUser = getScannerInput("请输入Hdfs 用户 (例：root):\n");
-        hdfsUser = !StringUtils.isEmpty(hdfsUser) ? hdfsUser : "root";
-        fileSystem = getFileSystem(hdfsUri, hdfsUser);
-        processOp();
-    }
 
     public FileSystem getFileSystem(String hdfsUri, String hdfsUser) throws URISyntaxException, IOException, InterruptedException {
         String HDFS = "hdfs://" + hdfsUri;
