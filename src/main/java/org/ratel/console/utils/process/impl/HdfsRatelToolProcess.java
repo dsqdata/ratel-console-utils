@@ -13,21 +13,20 @@ import java.net.URISyntaxException;
 
 @Slf4j
 public class HdfsRatelToolProcess extends RatelToolProcess {
-    @Override
-    public void process() throws Exception {
-        String hdfsUri = getScannerInput("请输入Hdfs 链接 (例：172.16.36.222:9000):\n");
-        hdfsUri = !StringUtils.isEmpty(hdfsUri) ? hdfsUri : "172.16.36.222:9000";
-        String hdfsUser = getScannerInput("请输入Hdfs 用户 (例：root):\n");
-        hdfsUser = !StringUtils.isEmpty(hdfsUser) ? hdfsUser : "root";
-        FileSystem fileSystem = getFileSystem(hdfsUri, hdfsUser);
+    FileSystem fileSystem = null;
 
+    public void processOp() throws Exception {
         log.info("\n----------------------------------------------------------\n\t" +
                         "FDFS 链接成功! \n\t" +
                         "1、{}\n\t" +
-                        "2、{}\n" +
+                        "2、{}\n\t" +
+                        "3、{}\n\t" +
+                        "4、{}\n" +
                         "----------------------------------------------------------",
                 "上传文件",
-                "下载文件"
+                "下载文件",
+                "删除文件",
+                "创建文件夹"
         );
 
         String toolNumber = getScannerInput("请选择功能:\n");
@@ -41,7 +40,6 @@ public class HdfsRatelToolProcess extends RatelToolProcess {
                     break;
                 }
                 fileSystem.copyFromLocalFile(new Path(localFilePath), new Path(hdfsPath + "/"));
-                fileSystem.close();
                 break;
             case "2":
                 String downloadFilePath = getScannerInput("请输入下载文件完整路径 (例：hdfs://172.16.36.222:9000/test/11.pdf):\n");
@@ -56,10 +54,38 @@ public class HdfsRatelToolProcess extends RatelToolProcess {
                 }
                 fileSystem.copyToLocalFile(false, new Path(downloadFilePath), new Path(loFilePath), true); //下载到D盘
                 break;
+            case "3":
+                String deleteFilePath = getScannerInput("请输入删除文件完整路径 (例：/test/11.pdf):\n");
+                if (StringUtils.isEmpty(deleteFilePath)) {
+                    System.out.println("删除文件完整路径为空！");
+                    break;
+                }
+                fileSystem.delete(new Path(deleteFilePath), true);
+                break;
+            case "4":
+                String creatFilePath = getScannerInput("请输入创建文件夹完整路径 (例：/test/11.pdf):\n");
+                if (StringUtils.isEmpty(creatFilePath)) {
+                    System.out.println("创建文件夹完整路径为空！");
+                    break;
+                }
+                fileSystem.mkdirs(new Path(creatFilePath));
+                break;
             default: //可选
                 System.out.println("请正确输入工具序号！");
                 break;
         }
+        this.processOp();
+    }
+
+
+    @Override
+    public void process() throws Exception {
+        String hdfsUri = getScannerInput("请输入Hdfs 链接 (例：172.16.36.222:9000):\n");
+        hdfsUri = !StringUtils.isEmpty(hdfsUri) ? hdfsUri : "172.16.36.222:9000";
+        String hdfsUser = getScannerInput("请输入Hdfs 用户 (例：root):\n");
+        hdfsUser = !StringUtils.isEmpty(hdfsUser) ? hdfsUser : "root";
+        fileSystem = getFileSystem(hdfsUri, hdfsUser);
+        processOp();
     }
 
     public FileSystem getFileSystem(String hdfsUri, String hdfsUser) throws URISyntaxException, IOException, InterruptedException {
