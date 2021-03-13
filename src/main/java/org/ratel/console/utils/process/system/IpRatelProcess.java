@@ -1,7 +1,7 @@
-package org.ratel.console.utils.process.impl;
+package org.ratel.console.utils.process.system;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ratel.console.utils.process.RatelToolProcess;
+import org.ratel.console.utils.base.RatelBaseSubProcess;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -12,12 +12,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
-public class IpRatelToolProcess extends RatelToolProcess {
-
-    @Override
-    public void beforeProcess() throws Exception {
-    }
-
+public class IpRatelProcess extends RatelBaseSubProcess {
 
     @Override
     public void processOperation() throws Exception {

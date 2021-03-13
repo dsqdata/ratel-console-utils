@@ -1,10 +1,8 @@
 package org.ratel.console.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ratel.console.utils.process.RatelToolProcess;
-import org.ratel.console.utils.process.impl.HdfsRatelToolProcess;
-import org.ratel.console.utils.process.impl.IpRatelToolProcess;
-import org.ratel.console.utils.process.impl.MainRateltoolProcess;
+import org.ratel.console.utils.base.RatelBaseProcess;
+import org.ratel.console.utils.process.MainRatelProcess;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,7 +19,7 @@ public class Application implements CommandLineRunner {
     }
 
     public void run(String... arg0) throws Exception {
-        RatelToolProcess process = new MainRateltoolProcess();
+        RatelBaseProcess process = new MainRatelProcess();
         process.process();
     }
 }

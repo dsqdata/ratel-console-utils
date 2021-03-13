@@ -69,6 +69,19 @@
             <artifactId>hadoop-client</artifactId>
             <version>2.7.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.cb372</groupId>
+            <artifactId>metrics-sigar</artifactId>
+            <version>0.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hyperic</groupId>
+            <artifactId>sigar</artifactId>
+            <version>1.6.4</version>
+            <classifier>native</classifier>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/sigar-1.6.4.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

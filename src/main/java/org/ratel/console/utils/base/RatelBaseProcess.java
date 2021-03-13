@@ -1,18 +1,14 @@
-package org.ratel.console.utils.process;
+package org.ratel.console.utils.base;
 
 import java.util.Scanner;
 
-public abstract class RatelToolProcess {
+public abstract class RatelBaseProcess {
 
     abstract public void beforeProcess() throws Exception;
+
     abstract public void processOperation() throws Exception;
 
-
-    public void process() throws Exception {
-        beforeProcess();
-        processOperation();
-    }
-
+    abstract public void process() throws Exception;
 
     public static String getScannerInput(String title) {
         Scanner scanner = new Scanner(System.in);
@@ -20,5 +16,4 @@ public abstract class RatelToolProcess {
         String scannerString = scanner.next();
         return scannerString;
     }
-
 }

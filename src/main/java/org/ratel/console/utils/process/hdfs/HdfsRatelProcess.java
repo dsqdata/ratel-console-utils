@@ -1,11 +1,11 @@
-package org.ratel.console.utils.process.impl;
+package org.ratel.console.utils.process.hdfs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.ratel.console.utils.process.RatelToolProcess;
+import org.ratel.console.utils.base.RatelBaseSubProcess;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -14,12 +14,8 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 
 @Slf4j
-public class HdfsRatelToolProcess extends RatelToolProcess {
+public class HdfsRatelProcess extends RatelBaseSubProcess {
     FileSystem fileSystem = null;
-
-    @Override
-    public void beforeProcess() throws Exception {
-    }
 
     @Override
     public void processOperation() throws Exception {
@@ -39,7 +35,6 @@ public class HdfsRatelToolProcess extends RatelToolProcess {
     public void beforeProcessSub() throws Exception {
         String[] args = new String[]{"返回上一层", "上传文件", "下载文件", "删除文件", "创建文件夹", "文件列表"};
         log.info("\n----------------------------------------------------------\n\t" +
-                "FDFS 链接成功! \n\t" +
                 "0、{}\n\t" +
                 "1、{}\n\t" +
                 "2、{}\n\t" +
